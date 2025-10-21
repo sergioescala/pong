@@ -45,9 +45,11 @@ function draw() {
     context.fill();
 
     // Draw scores
-    context.font = '30px Arial';
-    context.fillText(leftScore, canvas.width / 4, 50);
-    context.fillText(rightScore, canvas.width * 3 / 4, 50);
+    const scoreFontSize = canvas.width * 0.05;
+    context.font = `${scoreFontSize}px Arial`;
+    context.textAlign = 'center';
+    context.fillText(leftScore, canvas.width / 4, scoreFontSize + 10);
+    context.fillText(rightScore, canvas.width * 3 / 4, scoreFontSize + 10);
 }
 
 let gameOver = false;
@@ -88,9 +90,10 @@ function update() {
 
     // AI for paddles
     const paddleMaxSpeed = 7;
+    const difficulty = 0.1;
     // Left Paddle AI
     const leftPaddleCenter = leftPaddleY + paddleHeight / 2;
-    let leftPaddleSpeed = (ballY - leftPaddleCenter) * 0.1;
+    let leftPaddleSpeed = (ballY - leftPaddleCenter) * difficulty;
     if (Math.abs(leftPaddleSpeed) > paddleMaxSpeed) {
         leftPaddleSpeed = paddleMaxSpeed * Math.sign(leftPaddleSpeed);
     }
@@ -98,7 +101,7 @@ function update() {
 
     // Right Paddle AI
     const rightPaddleCenter = rightPaddleY + paddleHeight / 2;
-    let rightPaddleSpeed = (ballY - rightPaddleCenter) * 0.1;
+    let rightPaddleSpeed = (ballY - rightPaddleCenter) * difficulty;
     if (Math.abs(rightPaddleSpeed) > paddleMaxSpeed) {
         rightPaddleSpeed = paddleMaxSpeed * Math.sign(rightPaddleSpeed);
     }
@@ -142,10 +145,14 @@ function gameLoop() {
 
     if (gameOver) {
         context.fillStyle = '#fff';
-        context.font = '50px Arial';
-        context.fillText('Game Over', canvas.width / 2 - 150, canvas.height / 2);
-        context.font = '30px Arial';
-        context.fillText(`Restarting in ${countdown}...`, canvas.width / 2 - 150, canvas.height / 2 + 50);
+        const gameOverFontSize = canvas.width * 0.08;
+        context.font = `${gameOverFontSize}px Arial`;
+        context.textAlign = 'center';
+        context.fillText('Game Over', canvas.width / 2, canvas.height / 2);
+
+        const restartFontSize = canvas.width * 0.04;
+        context.font = `${restartFontSize}px Arial`;
+        context.fillText(`Restarting in ${countdown}...`, canvas.width / 2, canvas.height / 2 + gameOverFontSize);
     }
 
     requestAnimationFrame(gameLoop);
