@@ -5,6 +5,18 @@ let paddleWidth, paddleHeight, ballSize, ballSpeedX, ballSpeedY;
 let leftPaddleY, rightPaddleY, ballX, ballY;
 let leftScore = 0;
 let rightScore = 0;
+let player1Difficulty, player2Difficulty;
+
+function getDifficultySettings(difficulty) {
+    switch (difficulty) {
+        case 'easy':
+            return { maxSpeed: 4, difficulty: 0.07, errorFactor: 0.6 };
+        case 'medium':
+            return { maxSpeed: 7, difficulty: 0.1, errorFactor: 0.3 };
+        case 'hard':
+            return { maxSpeed: 10, difficulty: 0.15, errorFactor: 0.1 };
+    }
+}
 
 function setDimensions() {
     const aspectRatio = 4 / 3;
@@ -39,8 +51,24 @@ function setDimensions() {
 window.addEventListener('resize', setDimensions);
 window.addEventListener('load', () => {
     setDimensions();
-    gameLoop();
 });
+
+document.getElementById('startGame').addEventListener('click', () => {
+    const player1Difficulty = document.getElementById('player1Difficulty').value;
+    const player2Difficulty = document.getElementById('player2Difficulty').value;
+
+    document.getElementById('setupScreen').style.display = 'none';
+    document.getElementById('gameCanvas').style.display = 'block';
+
+    setDimensions();
+    startGame(player1Difficulty, player2Difficulty);
+});
+
+function startGame(p1Difficulty, p2Difficulty) {
+    player1Difficulty = p1Difficulty;
+    player2Difficulty = p2Difficulty;
+    gameLoop();
+}
 
 function draw() {
     // Clear the canvas
@@ -83,11 +111,20 @@ function update() {
     }
 
     // Ball collision with paddles
-    if (
-        (ballX - ballSize < paddleWidth && ballY > leftPaddleY && ballY < leftPaddleY + paddleHeight) ||
-        (ballX + ballSize > canvas.width - paddleWidth && ballY > rightPaddleY && ballY < rightPaddleY + paddleHeight)
-    ) {
-        ballSpeedX = -ballSpeedX;
+    if (ballX - ballSize < paddleWidth && ballY > leftPaddleY && ballY < leftPaddleY + paddleHeight) {
+        const intersectY = (leftPaddleY + paddleHeight / 2) - ballY;
+        const normalizedIntersectY = intersectY / (paddleHeight / 2);
+        const bounceAngle = normalizedIntersectY * (Math.PI / 4);
+        ballSpeedX = Math.abs(ballSpeedX);
+        ballSpeedY = -Math.sin(bounceAngle) * (Math.abs(ballSpeedX) + Math.abs(ballSpeedY));
+    }
+
+    if (ballX + ballSize > canvas.width - paddleWidth && ballY > rightPaddleY && ballY < rightPaddleY + paddleHeight) {
+        const intersectY = (rightPaddleY + paddleHeight / 2) - ballY;
+        const normalizedIntersectY = intersectY / (paddleHeight / 2);
+        const bounceAngle = normalizedIntersectY * (Math.PI / 4);
+        ballSpeedX = -Math.abs(ballSpeedX);
+        ballSpeedY = -Math.sin(bounceAngle) * (Math.abs(ballSpeedX) + Math.abs(ballSpeedY));
     }
 
     // Score points
@@ -102,30 +139,30 @@ function update() {
     }
 
     // AI for paddles
-    const leftPaddleMaxSpeed = 6;
-    const leftPaddleDifficulty = 0.09;
-    const leftPaddleErrorFactor = 0.4;
-
-    const rightPaddleMaxSpeed = 8;
-    const rightPaddleDifficulty = 0.12;
-    const rightPaddleErrorFactor = 0.3;
-
+    const leftPaddleSettings = getDifficultySettings(player1Difficulty);
+    const rightPaddleSettings = getDifficultySettings(player2Difficulty);
 
     // Left Paddle AI
-    let targetYLeft = ballY + (Math.random() - 0.5) * paddleHeight * leftPaddleErrorFactor;
+    let targetYLeft = ballY;
+    if (Math.random() < leftPaddleSettings.errorFactor) { // Chance to try a trick shot
+        targetYLeft = ballY + (Math.random() - 0.5) * paddleHeight;
+    }
     const leftPaddleCenter = leftPaddleY + paddleHeight / 2;
-    let leftPaddleSpeed = (targetYLeft - leftPaddleCenter) * leftPaddleDifficulty;
-    if (Math.abs(leftPaddleSpeed) > leftPaddleMaxSpeed) {
-        leftPaddleSpeed = leftPaddleMaxSpeed * Math.sign(leftPaddleSpeed);
+    let leftPaddleSpeed = (targetYLeft - leftPaddleCenter) * leftPaddleSettings.difficulty;
+    if (Math.abs(leftPaddleSpeed) > leftPaddleSettings.maxSpeed) {
+        leftPaddleSpeed = leftPaddleSettings.maxSpeed * Math.sign(leftPaddleSpeed);
     }
     leftPaddleY += leftPaddleSpeed;
 
     // Right Paddle AI
-    let targetYRight = ballY + (Math.random() - 0.5) * paddleHeight * rightPaddleErrorFactor;
+    let targetYRight = ballY;
+    if (Math.random() < rightPaddleSettings.errorFactor) { // Chance to try a trick shot
+        targetYRight = ballY + (Math.random() - 0.5) * paddleHeight;
+    }
     const rightPaddleCenter = rightPaddleY + paddleHeight / 2;
-    let rightPaddleSpeed = (targetYRight - rightPaddleCenter) * rightPaddleDifficulty;
-    if (Math.abs(rightPaddleSpeed) > rightPaddleMaxSpeed) {
-        rightPaddleSpeed = rightPaddleMaxSpeed * Math.sign(rightPaddleSpeed);
+    let rightPaddleSpeed = (targetYRight - rightPaddleCenter) * rightPaddleSettings.difficulty;
+    if (Math.abs(rightPaddleSpeed) > rightPaddleSettings.maxSpeed) {
+        rightPaddleSpeed = rightPaddleSettings.maxSpeed * Math.sign(rightPaddleSpeed);
     }
     rightPaddleY += rightPaddleSpeed;
 }

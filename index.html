@@ -7,8 +7,28 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
+    <div id="setupScreen">
+        <h1>Pong</h1>
+        <div class="player-setup">
+            <h2>Player 1</h2>
+            <select id="player1Difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium" selected>Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+        <div class="player-setup">
+            <h2>Player 2</h2>
+            <select id="player2Difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium" selected>Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+        <button id="startGame">Start Game</button>
+    </div>
+    <canvas id="gameCanvas" style="display: none;"></canvas>
     <script src="script.js"></script>
-    <footer>V0.6</footer>
+    <footer>V0.7</footer>
 </body>
 </html>
