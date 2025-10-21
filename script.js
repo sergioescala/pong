@@ -7,14 +7,27 @@ let leftScore = 0;
 let rightScore = 0;
 
 function setDimensions() {
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
+    const aspectRatio = 4 / 3;
+    const padding = 20;
+    let newWidth = window.innerWidth - padding;
+    let newHeight = window.innerHeight - padding;
+
+    if (newWidth / newHeight > aspectRatio) {
+        newWidth = newHeight * aspectRatio;
+    } else {
+        newHeight = newWidth / aspectRatio;
+    }
+
+    canvas.width = newWidth;
+    canvas.height = newHeight;
+    canvas.style.width = `${newWidth}px`;
+    canvas.style.height = `${newHeight}px`;
 
     paddleWidth = 10;
-    paddleHeight = canvas.height * 0.15; // Paddle height is 15% of canvas height
+    paddleHeight = canvas.height * 0.15;
     ballSize = 10;
-    ballSpeedX = canvas.width * 0.007; // Ball speed scales with width
-    ballSpeedY = canvas.height * 0.007; // Ball speed scales with height
+    ballSpeedX = canvas.width * 0.007;
+    ballSpeedY = canvas.height * 0.007;
 
     leftPaddleY = canvas.height / 2 - paddleHeight / 2;
     rightPaddleY = canvas.height / 2 - paddleHeight / 2;
@@ -91,17 +104,21 @@ function update() {
     // AI for paddles
     const paddleMaxSpeed = 7;
     const difficulty = 0.1;
+    const errorFactor = 0.2; // 20% error
+
     // Left Paddle AI
+    let targetYLeft = ballY + (Math.random() - 0.5) * paddleHeight * errorFactor;
     const leftPaddleCenter = leftPaddleY + paddleHeight / 2;
-    let leftPaddleSpeed = (ballY - leftPaddleCenter) * difficulty;
+    let leftPaddleSpeed = (targetYLeft - leftPaddleCenter) * difficulty;
     if (Math.abs(leftPaddleSpeed) > paddleMaxSpeed) {
         leftPaddleSpeed = paddleMaxSpeed * Math.sign(leftPaddleSpeed);
     }
     leftPaddleY += leftPaddleSpeed;
 
     // Right Paddle AI
+    let targetYRight = ballY + (Math.random() - 0.5) * paddleHeight * errorFactor;
     const rightPaddleCenter = rightPaddleY + paddleHeight / 2;
-    let rightPaddleSpeed = (ballY - rightPaddleCenter) * difficulty;
+    let rightPaddleSpeed = (targetYRight - rightPaddleCenter) * difficulty;
     if (Math.abs(rightPaddleSpeed) > paddleMaxSpeed) {
         rightPaddleSpeed = paddleMaxSpeed * Math.sign(rightPaddleSpeed);
     }
