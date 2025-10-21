@@ -10,11 +10,11 @@ let player1Difficulty, player2Difficulty;
 function getDifficultySettings(difficulty) {
     switch (difficulty) {
         case 'easy':
-            return { maxSpeed: 4, difficulty: 0.07, errorFactor: 0.6 };
+            return { maxSpeed: 4, difficulty: 0.07, errorFactor: 0.6, strategyFactor: 0.1 };
         case 'medium':
-            return { maxSpeed: 7, difficulty: 0.1, errorFactor: 0.3 };
+            return { maxSpeed: 7, difficulty: 0.1, errorFactor: 0.3, strategyFactor: 0.5 };
         case 'hard':
-            return { maxSpeed: 10, difficulty: 0.15, errorFactor: 0.1 };
+            return { maxSpeed: 10, difficulty: 0.15, errorFactor: 0.1, strategyFactor: 0.9 };
     }
 }
 
@@ -143,10 +143,15 @@ function update() {
     const rightPaddleSettings = getDifficultySettings(player2Difficulty);
 
     // Left Paddle AI
-    let targetYLeft = ballY;
-    if (Math.random() < leftPaddleSettings.errorFactor) { // Chance to try a trick shot
+    let targetYLeft;
+    if (Math.random() < leftPaddleSettings.strategyFactor) {
+        // Trick shot
         targetYLeft = ballY + (Math.random() - 0.5) * paddleHeight;
+    } else {
+        // Normal return
+        targetYLeft = ballY;
     }
+    targetYLeft += (Math.random() - 0.5) * paddleHeight * leftPaddleSettings.errorFactor;
     const leftPaddleCenter = leftPaddleY + paddleHeight / 2;
     let leftPaddleSpeed = (targetYLeft - leftPaddleCenter) * leftPaddleSettings.difficulty;
     if (Math.abs(leftPaddleSpeed) > leftPaddleSettings.maxSpeed) {
@@ -155,10 +160,15 @@ function update() {
     leftPaddleY += leftPaddleSpeed;
 
     // Right Paddle AI
-    let targetYRight = ballY;
-    if (Math.random() < rightPaddleSettings.errorFactor) { // Chance to try a trick shot
+    let targetYRight;
+    if (Math.random() < rightPaddleSettings.strategyFactor) {
+        // Trick shot
         targetYRight = ballY + (Math.random() - 0.5) * paddleHeight;
+    } else {
+        // Normal return
+        targetYRight = ballY;
     }
+    targetYRight += (Math.random() - 0.5) * paddleHeight * rightPaddleSettings.errorFactor;
     const rightPaddleCenter = rightPaddleY + paddleHeight / 2;
     let rightPaddleSpeed = (targetYRight - rightPaddleCenter) * rightPaddleSettings.difficulty;
     if (Math.abs(rightPaddleSpeed) > rightPaddleSettings.maxSpeed) {
