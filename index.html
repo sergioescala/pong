@@ -12,21 +12,27 @@
 <body>
     <div id="setupScreen">
         <h1>Pong</h1>
-        <div class="player-setup">
-            <h2>Player 1</h2>
-            <select id="player1Difficulty">
-                <option value="easy">Easy</option>
-                <option value="medium" selected>Medium</option>
-                <option value="hard">Hard</option>
-            </select>
-        </div>
-        <div class="player-setup">
-            <h2>Player 2</h2>
-            <select id="player2Difficulty">
-                <option value="easy">Easy</option>
-                <option value="medium" selected>Medium</option>
-                <option value="hard">Hard</option>
-            </select>
+        <div class="player-options">
+            <div class="player-setup">
+                <h2>Player 1</h2>
+                <select id="player1Difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                    <option value="trickster" selected>The Trickster</option>
+                    <option value="wall">The Wall</option>
+                </select>
+            </div>
+            <div class="player-setup">
+                <h2>Player 2</h2>
+                <select id="player2Difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                    <option value="trickster">The Trickster</option>
+                    <option value="wall" selected>The Wall</option>
+                </select>
+            </div>
         </div>
         <button id="startGame">Start Game</button>
     </div>

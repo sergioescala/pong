@@ -15,6 +15,10 @@ function getDifficultySettings(difficulty) {
             return { maxSpeed: 7, difficulty: 0.1, errorFactor: 0.3, strategyFactor: 0.5 };
         case 'hard':
             return { maxSpeed: 10, difficulty: 0.15, errorFactor: 0.1, strategyFactor: 0.9 };
+        case 'trickster':
+            return { maxSpeed: 8, difficulty: 0.12, errorFactor: 0.4, strategyFactor: 1.0 };
+        case 'wall':
+            return { maxSpeed: 12, difficulty: 0.2, errorFactor: 0.05, strategyFactor: 0.0 };
     }
 }
 
@@ -142,39 +146,27 @@ function update() {
     const leftPaddleSettings = getDifficultySettings(player1Difficulty);
     const rightPaddleSettings = getDifficultySettings(player2Difficulty);
 
-    // Left Paddle AI
-    let targetYLeft;
-    if (Math.random() < leftPaddleSettings.strategyFactor) {
-        // Trick shot
-        targetYLeft = ballY + (Math.random() - 0.5) * paddleHeight;
-    } else {
-        // Normal return
-        targetYLeft = ballY;
+    // Unified AI logic for both paddles
+    function movePaddle(paddleY, settings) {
+        let targetY;
+        if (Math.random() < settings.strategyFactor) {
+            // Aggressive trick shot
+            targetY = ballY + (Math.random() - 0.5) * paddleHeight * 1.5;
+        } else {
+            // Normal return
+            targetY = ballY;
+        }
+        targetY += (Math.random() - 0.5) * paddleHeight * settings.errorFactor;
+        const paddleCenter = paddleY + paddleHeight / 2;
+        let paddleSpeed = (targetY - paddleCenter) * settings.difficulty;
+        if (Math.abs(paddleSpeed) > settings.maxSpeed) {
+            paddleSpeed = settings.maxSpeed * Math.sign(paddleSpeed);
+        }
+        return paddleY + paddleSpeed;
     }
-    targetYLeft += (Math.random() - 0.5) * paddleHeight * leftPaddleSettings.errorFactor;
-    const leftPaddleCenter = leftPaddleY + paddleHeight / 2;
-    let leftPaddleSpeed = (targetYLeft - leftPaddleCenter) * leftPaddleSettings.difficulty;
-    if (Math.abs(leftPaddleSpeed) > leftPaddleSettings.maxSpeed) {
-        leftPaddleSpeed = leftPaddleSettings.maxSpeed * Math.sign(leftPaddleSpeed);
-    }
-    leftPaddleY += leftPaddleSpeed;
 
-    // Right Paddle AI
-    let targetYRight;
-    if (Math.random() < rightPaddleSettings.strategyFactor) {
-        // Trick shot
-        targetYRight = ballY + (Math.random() - 0.5) * paddleHeight;
-    } else {
-        // Normal return
-        targetYRight = ballY;
-    }
-    targetYRight += (Math.random() - 0.5) * paddleHeight * rightPaddleSettings.errorFactor;
-    const rightPaddleCenter = rightPaddleY + paddleHeight / 2;
-    let rightPaddleSpeed = (targetYRight - rightPaddleCenter) * rightPaddleSettings.difficulty;
-    if (Math.abs(rightPaddleSpeed) > rightPaddleSettings.maxSpeed) {
-        rightPaddleSpeed = rightPaddleSettings.maxSpeed * Math.sign(rightPaddleSpeed);
-    }
-    rightPaddleY += rightPaddleSpeed;
+    leftPaddleY = movePaddle(leftPaddleY, leftPaddleSettings);
+    rightPaddleY = movePaddle(rightPaddleY, rightPaddleSettings);
 }
 
 function checkWin() {
