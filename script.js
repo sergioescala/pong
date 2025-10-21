@@ -1,18 +1,33 @@
 const canvas = document.getElementById('gameCanvas');
 const context = canvas.getContext('2d');
 
-const paddleWidth = 10, paddleHeight = 100;
-let leftPaddleY = canvas.height / 2 - paddleHeight / 2;
-let rightPaddleY = canvas.height / 2 - paddleHeight / 2;
-
-const ballSize = 10;
-let ballX = canvas.width / 2;
-let ballY = canvas.height / 2;
-let ballSpeedX = 5;
-let ballSpeedY = 5;
-
+let paddleWidth, paddleHeight, ballSize, ballSpeedX, ballSpeedY;
+let leftPaddleY, rightPaddleY, ballX, ballY;
 let leftScore = 0;
 let rightScore = 0;
+
+function setDimensions() {
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+
+    paddleWidth = 10;
+    paddleHeight = canvas.height * 0.15; // Paddle height is 15% of canvas height
+    ballSize = 10;
+    ballSpeedX = canvas.width * 0.007; // Ball speed scales with width
+    ballSpeedY = canvas.height * 0.007; // Ball speed scales with height
+
+    leftPaddleY = canvas.height / 2 - paddleHeight / 2;
+    rightPaddleY = canvas.height / 2 - paddleHeight / 2;
+
+    ballX = canvas.width / 2;
+    ballY = canvas.height / 2;
+}
+
+window.addEventListener('resize', setDimensions);
+window.addEventListener('load', () => {
+    setDimensions();
+    gameLoop();
+});
 
 function draw() {
     // Clear the canvas
@@ -72,19 +87,22 @@ function update() {
     }
 
     // AI for paddles
+    const paddleMaxSpeed = 7;
+    // Left Paddle AI
     const leftPaddleCenter = leftPaddleY + paddleHeight / 2;
-    if (leftPaddleCenter < ballY) {
-        leftPaddleY += 4;
-    } else {
-        leftPaddleY -= 4;
+    let leftPaddleSpeed = (ballY - leftPaddleCenter) * 0.1;
+    if (Math.abs(leftPaddleSpeed) > paddleMaxSpeed) {
+        leftPaddleSpeed = paddleMaxSpeed * Math.sign(leftPaddleSpeed);
     }
+    leftPaddleY += leftPaddleSpeed;
 
+    // Right Paddle AI
     const rightPaddleCenter = rightPaddleY + paddleHeight / 2;
-    if (rightPaddleCenter < ballY) {
-        rightPaddleY += 4;
-    } else {
-        rightPaddleY -= 4;
+    let rightPaddleSpeed = (ballY - rightPaddleCenter) * 0.1;
+    if (Math.abs(rightPaddleSpeed) > paddleMaxSpeed) {
+        rightPaddleSpeed = paddleMaxSpeed * Math.sign(rightPaddleSpeed);
     }
+    rightPaddleY += rightPaddleSpeed;
 }
 
 function checkWin() {
@@ -132,5 +150,3 @@ function gameLoop() {
 
     requestAnimationFrame(gameLoop);
 }
-
-gameLoop();
