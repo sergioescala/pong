@@ -102,25 +102,30 @@ function update() {
     }
 
     // AI for paddles
-    const paddleMaxSpeed = 7;
-    const difficulty = 0.1;
-    const errorFactor = 0.2; // 20% error
+    const leftPaddleMaxSpeed = 6;
+    const leftPaddleDifficulty = 0.09;
+    const leftPaddleErrorFactor = 0.4;
+
+    const rightPaddleMaxSpeed = 8;
+    const rightPaddleDifficulty = 0.12;
+    const rightPaddleErrorFactor = 0.3;
+
 
     // Left Paddle AI
-    let targetYLeft = ballY + (Math.random() - 0.5) * paddleHeight * errorFactor;
+    let targetYLeft = ballY + (Math.random() - 0.5) * paddleHeight * leftPaddleErrorFactor;
     const leftPaddleCenter = leftPaddleY + paddleHeight / 2;
-    let leftPaddleSpeed = (targetYLeft - leftPaddleCenter) * difficulty;
-    if (Math.abs(leftPaddleSpeed) > paddleMaxSpeed) {
-        leftPaddleSpeed = paddleMaxSpeed * Math.sign(leftPaddleSpeed);
+    let leftPaddleSpeed = (targetYLeft - leftPaddleCenter) * leftPaddleDifficulty;
+    if (Math.abs(leftPaddleSpeed) > leftPaddleMaxSpeed) {
+        leftPaddleSpeed = leftPaddleMaxSpeed * Math.sign(leftPaddleSpeed);
     }
     leftPaddleY += leftPaddleSpeed;
 
     // Right Paddle AI
-    let targetYRight = ballY + (Math.random() - 0.5) * paddleHeight * errorFactor;
+    let targetYRight = ballY + (Math.random() - 0.5) * paddleHeight * rightPaddleErrorFactor;
     const rightPaddleCenter = rightPaddleY + paddleHeight / 2;
-    let rightPaddleSpeed = (targetYRight - rightPaddleCenter) * difficulty;
-    if (Math.abs(rightPaddleSpeed) > paddleMaxSpeed) {
-        rightPaddleSpeed = paddleMaxSpeed * Math.sign(rightPaddleSpeed);
+    let rightPaddleSpeed = (targetYRight - rightPaddleCenter) * rightPaddleDifficulty;
+    if (Math.abs(rightPaddleSpeed) > rightPaddleMaxSpeed) {
+        rightPaddleSpeed = rightPaddleMaxSpeed * Math.sign(rightPaddleSpeed);
     }
     rightPaddleY += rightPaddleSpeed;
 }
